@@ -9,10 +9,11 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Invalid request' });
     }
 
+    const baseUrl = process.env.SERVICE_URL;
     const key = process.env.SERVICE_KEY;
-    const provider = process.env.SERVICE_PROVIDER || 'anthropic';
+    const model = process.env.SERVICE_MODEL || 'claude-opus-4-5';
 
-    if (!key) {
+    if (!baseUrl || !key) {
         return res.status(500).json({ error: 'Service unavailable' });
     }
 
@@ -23,77 +24,41 @@ export default async function handler(req, res) {
         content: m.c
     }));
 
-    try {
-        let response;
+    const messages = [
+        ...history,
+        { role: 'user', content: q }
+    ];
 
-        if (provider === 'openai') {
-            response = await callOpenAI(key, instructions, history, q);
-        } else {
-            response = await callAnthropic(key, instructions, history, q);
+    try {
+        const endpoint = `${baseUrl}/v1/messages`;
+
+        const resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': key,
+                'anthropic-version': '2023-06-01'
+            },
+            body: JSON.stringify({
+                model: model,
+                max_tokens: 4096,
+                system: instructions,
+                messages: messages
+            })
+        });
+
+        if (!resp.ok) {
+            const err = await resp.text();
+            console.error('API error:', resp.status, err);
+            return res.status(500).json({ error: 'Service error' });
         }
+
+        const data = await resp.json();
+        const response = data.content?.[0]?.text || 'Unable to process request.';
 
         return res.status(200).json({ r: response });
     } catch (error) {
         console.error('Service error:', error.message);
         return res.status(500).json({ error: 'Service error' });
     }
-}
-
-async function callAnthropic(key, system, history, query) {
-    const messages = [
-        ...history,
-        { role: 'user', content: query }
-    ];
-
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': key,
-            'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-            model: process.env.SERVICE_MODEL || 'claude-sonnet-4-20250514',
-            max_tokens: 2048,
-            system: system,
-            messages: messages
-        })
-    });
-
-    if (!resp.ok) {
-        const err = await resp.text();
-        throw new Error(`API error: ${resp.status} - ${err}`);
-    }
-
-    const data = await resp.json();
-    return data.content[0].text;
-}
-
-async function callOpenAI(key, system, history, query) {
-    const messages = [
-        { role: 'system', content: system },
-        ...history,
-        { role: 'user', content: query }
-    ];
-
-    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${key}`
-        },
-        body: JSON.stringify({
-            model: process.env.SERVICE_MODEL || 'gpt-4o',
-            messages: messages,
-            max_tokens: 2048
-        })
-    });
-
-    if (!resp.ok) {
-        const err = await resp.text();
-        throw new Error(`API error: ${resp.status} - ${err}`);
-    }
-
-    const data = await resp.json();
-    return data.choices[0].message.content;
 }
