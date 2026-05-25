@@ -1,0 +1,7 @@
+name = "flow-account"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "./public"
+
+[vars]
+# These are overridden by dashboard secrets - don't put real keys here
+SERVICE_MODEL = "claude-opus-4-5"

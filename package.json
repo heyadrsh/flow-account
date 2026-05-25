@@ -4,9 +4,9 @@
     "description": "Personal workspace for notes and productivity",
     "private": true,
     "scripts": {
-        "dev": "vercel dev",
-        "build": "echo 'Static site - no build required'",
-        "start": "vercel dev"
+        "dev": "wrangler pages dev ./public",
+        "deploy": "wrangler pages deploy ./public",
+        "build": "echo 'Static site - no build required'"
     },
     "keywords": ["productivity", "workspace", "notes"],
     "license": "MIT"
