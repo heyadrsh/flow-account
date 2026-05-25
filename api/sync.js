@@ -36,7 +36,7 @@ export default async function handler(req, res) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'api-key': key,
+                'x-api-key': key,
                 'anthropic-version': '2023-06-01'
             },
             body: JSON.stringify({
