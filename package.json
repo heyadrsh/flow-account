@@ -1,0 +1,13 @@
+{
+    "name": "flow-account",
+    "version": "1.0.0",
+    "description": "Personal workspace for notes and productivity",
+    "private": true,
+    "scripts": {
+        "dev": "vercel dev",
+        "build": "echo 'Static site - no build required'",
+        "start": "vercel dev"
+    },
+    "keywords": ["productivity", "workspace", "notes"],
+    "license": "MIT"
+}

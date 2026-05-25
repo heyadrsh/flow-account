@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow Account - Personal Workspace</title>
+    <meta name="description" content="Streamline your workflow with Flow Account - your personal productivity workspace for notes, thoughts, and daily reflections.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                    <path d="M10 16h12M16 10v12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>Flow Account</span>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active" data-view="workspace">Workspace</button>
+                <button class="nav-btn" data-view="archive">Archive</button>
+            </nav>
+        </header>
+
+        <main class="main">
+            <div class="workspace" id="workspace">
+                <div class="entry-list" id="entryList">
+                    <div class="empty-state">
+                        <p>Start your first entry below</p>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <div class="input-wrapper">
+                        <textarea
+                            id="inputField"
+                            placeholder="Write your thoughts, questions, or ideas..."
+                            rows="1"
+                        ></textarea>
+                        <button id="submitBtn" class="submit-btn" disabled>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M3 10h14M12 5l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="input-hint">Press Enter to submit, Shift+Enter for new line</div>
+                </div>
+            </div>
+
+            <div class="archive hidden" id="archive">
+                <div class="archive-list" id="archiveList">
+                    <div class="empty-state">
+                        <p>Archived entries will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <span>Flow Account &copy; 2024</span>
+            <span class="status" id="status"></span>
+        </footer>
+    </div>
+
+    <div class="loader hidden" id="loader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
