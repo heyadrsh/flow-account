@@ -1,13 +1,29 @@
-export async function onRequestPost(context) {
+export async function onRequest(context) {
     const { request, env } = context;
+
+    const corsHeaders = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Content-Type': 'application/json'
+    };
+
+    if (request.method === 'OPTIONS') {
+        return new Response(null, { status: 200, headers: corsHeaders });
+    }
+
+    if (request.method !== 'POST') {
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+            status: 405, headers: corsHeaders
+        });
+    }
 
     try {
         const { q, ctx } = await request.json();
 
         if (!q || typeof q !== 'string') {
             return new Response(JSON.stringify({ error: 'Invalid request' }), {
-                status: 400,
-                headers: { 'Content-Type': 'application/json' }
+                status: 400, headers: corsHeaders
             });
         }
 
@@ -17,8 +33,7 @@ export async function onRequestPost(context) {
 
         if (!baseUrl || !key) {
             return new Response(JSON.stringify({ error: 'Service unavailable' }), {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' }
+                status: 500, headers: corsHeaders
             });
         }
 
@@ -55,8 +70,7 @@ export async function onRequestPost(context) {
             const err = await resp.text();
             console.error('API error:', resp.status, err);
             return new Response(JSON.stringify({ error: 'Service error' }), {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' }
+                status: 500, headers: corsHeaders
             });
         }
 
@@ -64,14 +78,12 @@ export async function onRequestPost(context) {
         const response = data.content?.[0]?.text || 'Unable to process request.';
 
         return new Response(JSON.stringify({ r: response }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' }
+            status: 200, headers: corsHeaders
         });
     } catch (error) {
         console.error('Service error:', error.message);
         return new Response(JSON.stringify({ error: 'Service error' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
+            status: 500, headers: corsHeaders
         });
     }
 }
